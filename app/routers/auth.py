@@ -2,7 +2,7 @@
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from fastapi.responses import RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 
 from app.config import Settings, get_settings
 from app.oauth import OAuthExchangeError, build_authorize_url, exchange_code_for_token
@@ -10,12 +10,34 @@ from app.oauth import OAuthExchangeError, build_authorize_url, exchange_code_for
 router = APIRouter(tags=["auth"])
 
 
+def _wants_json_response(request: Request) -> bool:
+    """Swagger UI sends Accept: application/json; a browser tab sends text/html first."""
+    accept = request.headers.get("accept", "")
+    if "text/html" in accept:
+        return False
+    return "application/json" in accept
+
+
 @router.get("/auth/login")
-async def auth_login(settings: Settings = Depends(get_settings)) -> RedirectResponse:
+async def auth_login(
+    request: Request,
+    settings: Settings = Depends(get_settings),
+) -> RedirectResponse | JSONResponse:
     url = build_authorize_url(
         client_id=settings.github_client_id,
         redirect_uri=settings.github_redirect_uri,
     )
+    # fetch() in Swagger follows 302 to github.com → cross-origin → "Failed to fetch"
+    if _wants_json_response(request):
+        return JSONResponse(
+            {
+                "authorize_url": url,
+                "message": (
+                    "Open authorize_url in this browser to complete GitHub login, "
+                    "then return to /docs."
+                ),
+            }
+        )
     return RedirectResponse(url)
 
 

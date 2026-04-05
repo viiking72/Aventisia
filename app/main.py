@@ -12,9 +12,10 @@ _TAGS = [
     {
         "name": "auth",
         "description": (
-            "**GitHub OAuth 2.0.** Use this first: open **GET /auth/login** in a browser "
-            "(on the same host as this API), approve GitHub, and you will be redirected to "
-            "**GET /auth/callback** with a session cookie set."
+            "**GitHub OAuth 2.0.** In **Swagger**, **Try it out** on **GET /auth/login** returns JSON "
+            "with **authorize_url** (no redirect—see github note). Open that URL in the same browser, "
+            "then use **github** endpoints. Or open **/auth/login** directly in the address bar for an "
+            "immediate redirect."
         ),
     },
     {
@@ -32,7 +33,7 @@ GitHub OAuth connector (session-based).
 
 ### Using Swagger UI (`/docs`) on Render
 
-1. Open **`/auth/login`** in the **same browser** (e.g. `https://YOUR-SERVICE.onrender.com/auth/login`) and finish the GitHub authorization.
+1. In **`/docs`**, run **GET /auth/login** → copy **`authorize_url`** from the response and open it in the **same browser** (or open `/auth/login` in the address bar instead). Finish GitHub authorization.
 2. After redirect to `/auth/callback`, return to **`/docs`**.
 3. Expand **github** operations and click **Try it out** → **Execute**. The session cookie is included; **`/repos`**, **`/list-issues`**, and **`/create-issue`** should return **200** if you are logged in.
 

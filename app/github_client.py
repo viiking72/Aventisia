@@ -28,7 +28,7 @@ class GitHubClient:
         self._base = base_url.rstrip("/")
         self._timeout = timeout
 
-    async def list_user_repos(self, token: str) -> list[dict[str, Any]]:
+    async def list_user_repos(self, token: str) -> list[str]:
         async with httpx.AsyncClient() as client:
             r = await client.get(
                 f"{self._base}/user/repos",
@@ -36,7 +36,12 @@ class GitHubClient:
                 params={"per_page": 100, "sort": "updated"},
                 timeout=self._timeout,
             )
-        return self._json_list(r)
+        raw = self._json_list(r)
+        return [
+            str(item["full_name"])
+            for item in raw
+            if isinstance(item, dict) and item.get("full_name") is not None
+        ]
 
     async def list_repo_issues(self, token: str, owner: str, repo: str) -> list[dict[str, Any]]:
         async with httpx.AsyncClient() as client:

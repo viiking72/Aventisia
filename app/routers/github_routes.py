@@ -18,7 +18,7 @@ def _map_github_error(exc: GitHubApiError) -> HTTPException:
 async def list_repos(
     token: str = Depends(github_access_token),
     gh: GitHubClient = Depends(get_github_client),
-) -> list[dict[str, Any]]:
+) -> list[str]:
     try:
         return await gh.list_user_repos(token)
     except GitHubApiError as e:

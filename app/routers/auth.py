@@ -1,7 +1,7 @@
 """OAuth login and callback (session stores the GitHub access token)."""
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from fastapi.responses import JSONResponse, RedirectResponse, Response
 
 from app.config import Settings, get_settings
@@ -45,7 +45,14 @@ async def auth_login(
 async def auth_callback(
     request: Request,
     settings: Settings = Depends(get_settings),
-    code: str | None = None,
+    code: str | None = Query(
+        None,
+        description=(
+            "OAuth 2.0 authorization code issued by GitHub. It appears in the callback URL as "
+            "`?code=...` after you approve the app—do not call this endpoint from Swagger with an "
+            "empty code; complete login via **authorize_url** from GET /auth/login instead."
+        ),
+    ),
 ) -> dict[str, Any]:
     if not code:
         raise HTTPException(status_code=400, detail="Missing code")

@@ -2,7 +2,7 @@
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse, Response
 
 from app.config import Settings, get_settings
 from app.oauth import OAuthExchangeError, build_authorize_url, exchange_code_for_token
@@ -18,11 +18,11 @@ def _wants_json_response(request: Request) -> bool:
     return "application/json" in accept
 
 
-@router.get("/auth/login")
+@router.get("/auth/login", response_model=None)
 async def auth_login(
     request: Request,
     settings: Settings = Depends(get_settings),
-) -> RedirectResponse | JSONResponse:
+) -> Response:
     url = build_authorize_url(
         client_id=settings.github_client_id,
         redirect_uri=settings.github_redirect_uri,

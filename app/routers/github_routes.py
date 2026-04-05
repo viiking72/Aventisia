@@ -1,11 +1,9 @@
 """REST endpoints that proxy to the GitHub API using the session token."""
-from typing import Any
-
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.deps import github_access_token, get_github_client
 from app.github_client import GitHubApiError, GitHubClient
-from app.schemas import CreateIssueBody
+from app.schemas import CreateIssueBody, CreateIssueResponse, IssueSummary
 
 router = APIRouter(tags=["github"])
 
@@ -31,7 +29,7 @@ async def list_issues(
     repo: str,
     token: str = Depends(github_access_token),
     gh: GitHubClient = Depends(get_github_client),
-) -> list[dict[str, Any]]:
+) -> list[IssueSummary]:
     try:
         return await gh.list_repo_issues(token, owner, repo)
     except GitHubApiError as e:
@@ -43,9 +41,9 @@ async def create_issue(
     payload: CreateIssueBody,
     token: str = Depends(github_access_token),
     gh: GitHubClient = Depends(get_github_client),
-) -> dict[str, Any]:
+) -> CreateIssueResponse:
     try:
-        return await gh.create_issue(
+        raw = await gh.create_issue(
             token,
             payload.owner,
             payload.repo,
@@ -54,3 +52,7 @@ async def create_issue(
         )
     except GitHubApiError as e:
         raise _map_github_error(e) from e
+    return CreateIssueResponse(
+        title=str(raw.get("title", payload.title)),
+        body=raw.get("body"),
+    )

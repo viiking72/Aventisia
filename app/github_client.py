@@ -51,7 +51,21 @@ class GitHubClient:
                 params={"per_page": 50, "state": "all"},
                 timeout=self._timeout,
             )
-        return self._json_list(r)
+        raw = self._json_list(r)
+        slim: list[dict[str, Any]] = []
+        for item in raw:
+            if not isinstance(item, dict):
+                continue
+            if "number" not in item or "title" not in item:
+                continue
+            slim.append(
+                {
+                    "number": item["number"],
+                    "title": item["title"],
+                    "body": item.get("body"),
+                }
+            )
+        return slim
 
     async def create_issue(
         self,

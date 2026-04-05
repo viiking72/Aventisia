@@ -33,11 +33,11 @@ GitHub OAuth connector (session-based).
 
 ### Using Swagger UI (`/docs`) on Render
 
-1. In **`/docs`**, run **GET /auth/login** → copy **`authorize_url`** from the response and open it in the **same browser** (or open `/auth/login` in the address bar instead). Finish GitHub authorization.
-2. After redirect to `/auth/callback`, return to **`/docs`**.
-3. Expand **github** operations and click **Try it out** → **Execute**. The session cookie is included; **`/repos`**, **`/list-issues`**, and **`/create-issue`** should return **200** if you are logged in.
+1. In **`/docs`**, run **GET /auth/login** → open **`authorize_url`** in the **same browser** (or visit **`/auth/login`** in the address bar). Approve the app on GitHub.
+2. GitHub sends you to **`/auth/callback`** (you are redirected to **`/docs?github=connected`** when login succeeds). Do **not** call `/auth/callback` from Swagger—the `code` is **single-use**; reusing it causes `bad_verification_code`.
+3. Use **github** endpoints in **`/docs`** (**Try it out**). The session cookie is sent automatically.
 
-Swagger cannot complete the redirect for you: you must log in once in the browser. **Authorize** in Swagger is not used (auth is cookie-based).
+**Authorize** in Swagger is not used (auth is cookie-based). **`/auth/callback` is hidden from this page** on purpose—it is only for GitHub’s redirect.
 
 ### Production on Render
 

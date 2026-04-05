@@ -41,19 +41,17 @@ async def auth_login(
     return RedirectResponse(url)
 
 
-@router.get("/auth/callback")
+@router.get(
+    "/auth/callback",
+    include_in_schema=False,
+    response_model=None,
+)
 async def auth_callback(
     request: Request,
     settings: Settings = Depends(get_settings),
-    code: str | None = Query(
-        None,
-        description=(
-            "OAuth 2.0 authorization code issued by GitHub. It appears in the callback URL as "
-            "`?code=...` after you approve the app—do not call this endpoint from Swagger with an "
-            "empty code; complete login via **authorize_url** from GET /auth/login instead."
-        ),
-    ),
-) -> dict[str, Any]:
+    code: str | None = Query(None),
+) -> Response:
+    """GitHub redirects the browser here—do not call manually from Swagger (codes are single-use)."""
     if not code:
         raise HTTPException(status_code=400, detail="Missing code")
 
@@ -65,10 +63,22 @@ async def auth_callback(
             redirect_uri=settings.github_redirect_uri,
         )
     except OAuthExchangeError as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail) from e
+        detail: Any = e.detail
+        if isinstance(detail, dict) and detail.get("error") == "bad_verification_code":
+            detail = (
+                "Invalid or already used authorization code. GitHub codes work once and expire "
+                "quickly. Use GET /auth/login, approve on GitHub, and let the browser hit this URL "
+                "automatically—do not paste the same ?code= into Swagger or call it twice."
+            )
+        raise HTTPException(status_code=e.status_code, detail=detail) from e
 
     request.session["github_access_token"] = data["access_token"]
-    return {
-        "status": "ok",
-        "message": "GitHub connected. Session cookie set; call /repos etc.",
-    }
+
+    if _wants_json_response(request):
+        return JSONResponse(
+            {
+                "status": "ok",
+                "message": "GitHub connected. Session cookie set; call /repos etc.",
+            }
+        )
+    return RedirectResponse(url="/docs?github=connected", status_code=302)

@@ -12,10 +12,9 @@ _TAGS = [
     {
         "name": "auth",
         "description": (
-            "**GitHub OAuth 2.0.** In **Swagger**, **Try it out** on **GET /auth/login** returns JSON "
-            "with **authorize_url** (no redirect—see github note). Open that URL in the same browser, "
-            "then use **github** endpoints. Or open **/auth/login** directly in the address bar for an "
-            "immediate redirect."
+            "**GitHub OAuth 2.0.** **GET /auth/login** → open **authorize_url** → approve on GitHub → "
+            "copy **code** from the page you land on → **GET /auth/callback** in Swagger with that **code** "
+            "to store the token (same browser session)."
         ),
     },
     {
@@ -33,11 +32,12 @@ GitHub OAuth connector (session-based).
 
 ### Using Swagger UI (`/docs`) on Render
 
-1. In **`/docs`**, run **GET /auth/login** → open **`authorize_url`** in the **same browser** (or visit **`/auth/login`** in the address bar). Approve the app on GitHub.
-2. GitHub sends you to **`/auth/callback`** (you are redirected to **`/docs?github=connected`** when login succeeds). Do **not** call `/auth/callback` from Swagger—the `code` is **single-use**; reusing it causes `bad_verification_code`.
-3. Use **github** endpoints in **`/docs`** (**Try it out**). The session cookie is sent automatically.
+1. **`GET /auth/login`** → open **`authorize_url`** (or **`/auth/login`** in the address bar) → approve on GitHub.
+2. Your browser opens **`/auth/callback?code=...`** and shows a **copyable code** (no token stored yet).
+3. In **`/docs`**, run **`GET /auth/callback`**, paste the **code**, **Execute** — session is set.
+4. Use **github** endpoints; the session cookie is sent from **`/docs`**.
 
-**Authorize** in Swagger is not used (auth is cookie-based). **`/auth/callback` is hidden from this page** on purpose—it is only for GitHub’s redirect.
+The **`code` is single-use** (GitHub). **Authorize** in Swagger is not used (cookie session).
 
 ### Production on Render
 

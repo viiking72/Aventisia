@@ -13,7 +13,7 @@ If you prefer to run the application locally rather than using the deployed app,
 
 1. Clone and Extract: Download and extract the repository zip file.
 
-2. Environment Configuration: - In the extracted folder.
+2. Environment Configuration: In the extracted folder.
 
     a. Create a file named .env.
   
@@ -39,7 +39,7 @@ If you prefer to run the application locally rather than using the deployed app,
        
           pip install -r requirements.txt
   
-5. Running the app -
+5. Running the app :
     
         python -m uvicorn main:app --reload --port 8000
 

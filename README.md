@@ -13,7 +13,7 @@ If you prefer to run the application locally rather than using the deployed app,
 
 1. Clone and Extract: Download and extract the repository zip file.
 
-2. Environment Configuration: - Navigate to the /github_connector folder.
+2. Environment Configuration: - In the extracted folder.
 
     a. Create a file named .env.
   

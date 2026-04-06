@@ -41,7 +41,7 @@ If you prefer to run the application locally rather than using the deployed app,
   
 5. Running the app -
     
-        python -m uvicorn app.main:app --reload --port 8000
+        python -m uvicorn main:app --reload --port 8000
 
 
 # The Endpoints - 

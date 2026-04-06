@@ -13,9 +13,9 @@ If you prefer to run the application locally rather than using the deployed app,
 
 1. Clone and Extract: Download and extract the repository zip file.
 
-2. Environment Configuration: In the extracted folder.
+2. Environment Configuration: 
 
-    a. Create a file named .env.
+    a. In the extracted folder - Create a file named .env
   
     b. Add the following variables (obtained from your GitHub Developer Settings):
 

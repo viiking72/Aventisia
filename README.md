@@ -15,20 +15,31 @@ If you prefer to run the application locally rather than using the deployed app,
 
 2. Environment Configuration: - Navigate to the /github_connector folder.
 
-  a. Create a file named .env.
+    a. Create a file named .env.
   
-  b. Add the following variables (obtained from your GitHub Developer Settings):
-    GITHUB_CLIENT_ID=your_client_id
-    GITHUB_CLIENT_SECRET=your_client_secret
-    GITHUB_REDIRECT_URI=http://127.0.0.1:8000/auth/callback
-    SESSION_SECRET=your_random_session_secret
+    b. Add the following variables (obtained from your GitHub Developer Settings):
+
+  
+        GITHUB_CLIENT_ID=your_client_id
+      
+        GITHUB_CLIENT_SECRET=your_client_secret
+      
+        GITHUB_REDIRECT_URI=http://127.0.0.1:8000/auth/callback
+      
+        SESSION_SECRET=your_random_session_secret
+
+    
 3. Install Dependencies:
-  In terminal run
-  python -m venv venv
-  source venv/bin/activate  # On Windows use: venv\Scripts\activate
-  pip install -r requirements.txt
+   
+    In terminal run
+
+          python -m venv venv
+       
+          source venv/bin/activate  # On Windows use: venv\Scripts\activate
+       
+          pip install -r requirements.txt
   
-4. Running the app - 
+5. Running the app - 
   python -m uvicorn main:app --reload --port 8000
 
 
